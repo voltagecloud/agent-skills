@@ -1,0 +1,58 @@
+{
+  "product_sources": [
+    {
+      "url": "https://docs.voltageapi.com/",
+      "retrieved_at": "2026-09-08T18:41:48.531241+00:00",
+      "retrieved_html_sha256": "4d5187a633f4564ce040022440ec6d2da22a9823536b63644cb190fa3304c0f1",
+      "role": "Secondary product/setup context; OpenAPI takes precedence. HTML is not bundled."
+    },
+    {
+      "url": "https://docs.voltageapi.com/setup",
+      "retrieved_at": "2026-09-08T18:53:55.147974+00:00",
+      "retrieved_html_sha256": "1f5151378fb86a30e695cd9265ba3d82c3b4206371a7bd32e9a33753c1081634",
+      "role": "Secondary product/setup context; OpenAPI takes precedence. HTML is not bundled."
+    },
+    {
+      "url": "https://docs.voltageapi.com/wallet-setup-guide",
+      "retrieved_at": "2026-09-08T18:53:55.571001+00:00",
+      "retrieved_html_sha256": "e8eb2840879f0f20e38d42c4de6955462183f895de61c334fbee039b67a6d9f2",
+      "role": "Secondary product/setup context; OpenAPI takes precedence. HTML is not bundled."
+    },
+    {
+      "url": "https://docs.voltageapi.com/access-model",
+      "retrieved_at": "2026-09-08T18:53:54.549106+00:00",
+      "retrieved_html_sha256": "7592effb8c3f2571ab15de67290092843bebcb5d40483d67e8613c883eab037f",
+      "role": "Secondary product/setup context; OpenAPI takes precedence. HTML is not bundled."
+    },
+    {
+      "url": "https://docs.voltageapi.com/webhooks",
+      "retrieved_at": "2026-09-08T18:53:55.183590+00:00",
+      "retrieved_html_sha256": "0b7c1117f687f1bd46b6d210bd2822c3ede19f34ca07dc352de81009016e3a47",
+      "role": "Secondary product/setup context; OpenAPI takes precedence. HTML is not bundled."
+    },
+    {
+      "url": "https://docs.voltageapi.com/checkout-beta",
+      "retrieved_at": "2026-09-08T18:42:41.585652+00:00",
+      "retrieved_html_sha256": "7597a26241dd0c1b6518321fea192b598223dc4db2db555d499deccc7a5d0747",
+      "role": "Secondary product/setup context; OpenAPI takes precedence. HTML is not bundled."
+    }
+  ],
+  "contract": {
+    "url": "https://voltageapi.com/v1/openapi/docs.json",
+    "retrieved_at": "2026-09-08T18:41:44.319160+00:00",
+    "sha256": "39999767c6c207db9358938cce8ab508d77f3dd43796664bb0c30c74ecd6ef87",
+    "reference_page": "https://voltageapi.com/v1/docs",
+    "file": "openapi.json",
+    "openapi": "3.1.0",
+    "info_version": "1.0.0",
+    "operation_count": 47
+  },
+  "owner_guidance": {
+    "recorded_on": "2026-09-08",
+    "statements": [
+      "Use Voltage API in developer contexts and Voltage for the product; do not brand the skill Voltage Payments.",
+      "Credit-backed is the easiest and recommended starting point for most customers; agents explain applicability and do not decide for the customer.",
+      "Use ~/.voltage/ as a local configuration convention; this is not an API contract requirement."
+    ]
+  }
+}
