@@ -1,0 +1,32 @@
+name: Validate skills
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+      - run: python -m pip install -r tests/requirements.txt
+      - run: python -m unittest discover -s tests -p 'test_*.py' -v
+      - run: node --test tests/client.test.mjs
+      - name: Type-check server-side examples
+        run: |
+          npm install --prefix "$RUNNER_TEMP/voltage-typescript" --no-save --package-lock=false typescript@5.9.3 @types/node@24
+          "$RUNNER_TEMP/voltage-typescript/node_modules/.bin/tsc" --noEmit --strict --target ES2022 --module nodenext --typeRoots "$RUNNER_TEMP/voltage-typescript/node_modules/@types" skills/voltage-api/assets/voltage-client.ts skills/voltage-api/assets/verify-webhook.ts
+      - run: python tools/refresh-reference.py --check
