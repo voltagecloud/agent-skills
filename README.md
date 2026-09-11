@@ -61,10 +61,16 @@ VOLTAGE_ORGANIZATION_ID=your-organization-uuid
 VOLTAGE_ENVIRONMENT_ID=your-environment-uuid
 # Optional default:
 VOLTAGE_WALLET_ID=your-wallet-uuid
+# Optional API origin shortcut: production (default), staging, or local
+# VOLTAGE_API_ENV=staging
+# Or use a custom base URL, which takes precedence over VOLTAGE_API_ENV
+# VOLTAGE_API_URL=https://api.example.com/v1
 ```
 
 Process environment values override the file. Explicit resource parameters
-override defaults for a single request. See the skill's
+override defaults for a single request. `VOLTAGE_API_ENV=staging` selects
+`https://staging.voltageapi.com/v1`, while `VOLTAGE_API_ENV=local` selects
+`https://localhost:3210/`. See the skill's
 [configuration guide](skills/voltage-api/references/configuration.md).
 
 ## Source policy and maintenance

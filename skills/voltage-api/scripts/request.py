@@ -10,12 +10,19 @@ import stat
 import subprocess
 import sys
 import tempfile
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 from uuid import UUID
 from contract import find_operation, load
 
-BASE_URL = 'https://voltageapi.com/v1'
-CONFIG_KEYS = {'VOLTAGE_API_KEY', 'VOLTAGE_ORGANIZATION_ID', 'VOLTAGE_ENVIRONMENT_ID', 'VOLTAGE_WALLET_ID'}
+BASE_URLS = {
+    'production': 'https://voltageapi.com/v1',
+    'staging': 'https://staging.voltageapi.com/v1',
+    'local': 'https://localhost:3210',
+}
+CONFIG_KEYS = {
+    'VOLTAGE_API_KEY', 'VOLTAGE_ORGANIZATION_ID', 'VOLTAGE_ENVIRONMENT_ID',
+    'VOLTAGE_WALLET_ID', 'VOLTAGE_API_ENV', 'VOLTAGE_API_URL',
+}
 SECRET_OPERATIONS = {'create_webhook', 'generate_webhook_key', 'create_session'}
 SECRET_FIELDS = {'shared_secret', 'checkout_token', 'checkout_url', 'stream_token', 'api_key', 'preimage'}
 
@@ -55,6 +62,28 @@ def configuration(path=None, environ=None):
     env = os.environ if environ is None else environ
     values.update({key: env[key] for key in CONFIG_KEYS if key in env})
     return values
+
+
+def base_url(config):
+    if 'VOLTAGE_API_URL' not in config:
+        environment = config.get('VOLTAGE_API_ENV', 'production')
+        if environment not in BASE_URLS:
+            choices = ', '.join(BASE_URLS)
+            raise ValueError(f'VOLTAGE_API_ENV must be one of: {choices}')
+        return BASE_URLS[environment]
+
+    value = config['VOLTAGE_API_URL']
+    if not value or any(ord(char) < 32 or ord(char) == 127 for char in value):
+        raise ValueError('VOLTAGE_API_URL must be a nonempty HTTPS URL without control characters')
+    parsed = urlsplit(value)
+    try:
+        parsed.port  # Validate a supplied port before the URL reaches curl.
+    except ValueError:
+        raise ValueError('VOLTAGE_API_URL has an invalid port') from None
+    if (parsed.scheme != 'https' or not parsed.hostname or parsed.username is not None
+            or parsed.password is not None or parsed.query or parsed.fragment):
+        raise ValueError('VOLTAGE_API_URL must be an HTTPS base URL without credentials, query, or fragment')
+    return value.rstrip('/')
 
 
 def pairs(items, unique=False):
@@ -102,7 +131,7 @@ def prepare(spec, operation_id, config, params=(), query=(), body=None):
             raise ValueError('This operation does not accept a request body')
         if not isinstance(body, dict):
             raise ValueError('The request JSON must be an object')
-    return method, BASE_URL + path + ('?' + urlencode(query) if query else ''), key
+    return method, base_url(config) + path + ('?' + urlencode(query) if query else ''), key
 
 
 def redact(value, key):

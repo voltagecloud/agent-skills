@@ -20,15 +20,25 @@ VOLTAGE_API_KEY=your-environment-key
 VOLTAGE_ORGANIZATION_ID=your-organization-uuid
 VOLTAGE_ENVIRONMENT_ID=your-environment-uuid
 VOLTAGE_WALLET_ID=optional-default-wallet-uuid
+# Optional API origin shortcut: production (default), staging, or local
+# VOLTAGE_API_ENV=staging
+# Or use a custom API base URL, which overrides VOLTAGE_API_ENV
+# VOLTAGE_API_URL=https://api.example.com/v1
 ```
 
-The optional wallet line should be omitted if there is no default. Only these
-four keys are currently supported by the helper. Values are literal single-line
-strings, optionally surrounded by matching single/double quotes. Blank lines and
-full-line comments are supported. No shell expansion, `export`, escapes, or inline
-comments are interpreted. Do not `source` the file or use `eval` to load it.
+The optional wallet and API-selection lines should be omitted when they are not
+needed. Only these six keys are currently supported by the helper. Values are
+literal single-line strings, optionally surrounded by matching single/double
+quotes. Blank lines and full-line comments are supported. No shell expansion,
+`export`, escapes, or inline comments are interpreted. Do not `source` the file
+or use `eval` to load it.
 
-Precedence: explicit `--param` resource values > process environment > configuration
+API base URL precedence is `VOLTAGE_API_URL` > `VOLTAGE_API_ENV` > production.
+The `staging` shortcut uses `https://staging.voltageapi.com/v1`; `local` uses
+`https://localhost:3210/`; and `production` uses `https://voltageapi.com/v1`.
+Custom URLs must use HTTPS and cannot contain credentials, a query, or a fragment.
+
+General precedence: explicit `--param` resource values > process environment > configuration
 file. `--config` selects a different file for that invocation; process variables
 still win, including explicitly empty variables. An empty key fails rather than
 silently falling back to a saved key. Config file values are never rewritten by
@@ -51,6 +61,7 @@ alternate private file without inherited defaults taking precedence:
 ```sh
 env -u VOLTAGE_API_KEY -u VOLTAGE_ORGANIZATION_ID \
   -u VOLTAGE_ENVIRONMENT_ID -u VOLTAGE_WALLET_ID \
+  -u VOLTAGE_API_ENV -u VOLTAGE_API_URL \
   python3 <skill-dir>/scripts/request.py get_payments \
   --config ~/.voltage/test.env --query pagination=cursor --query limit=10
 ```
@@ -86,7 +97,8 @@ python3 <skill-dir>/scripts/request.py get_wallet --param "wallet_id=$WALLET_ID"
 Shell variables in examples must already exist in your shell or be set to non-secret
 values you resolved. The helper's internal `.env` loader does not export shell variables.
 
-The helper runs curl against the fixed `https://voltageapi.com/v1` origin. It
+The helper runs curl against the configured API origin, defaulting to
+`https://voltageapi.com/v1`. It
 supports operations that explicitly allow `api_key`, passes that header through
 stdin rather than process arguments, disables curlrc loading, does not follow
 redirects, and performs no automatic retries. It does not implement checkout browser

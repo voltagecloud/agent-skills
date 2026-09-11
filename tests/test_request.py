@@ -55,8 +55,43 @@ class ConfigTests(unittest.TestCase):
             path.write_text('VOLTAGE_API_KEY=a\nVOLTAGE_API_KEY=b\n')
             with self.assertRaises(ValueError): request.read_config(path)
 
+    def test_api_environment_and_url_are_loaded_with_process_precedence(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / '.env'
+            path.write_text('VOLTAGE_API_ENV=staging\nVOLTAGE_API_URL=https://saved.example.test/v1/\n')
+            path.chmod(0o600)
+            values = request.configuration(path, {'VOLTAGE_API_URL': 'https://process.example.test/api'})
+            self.assertEqual(values['VOLTAGE_API_ENV'], 'staging')
+            self.assertEqual(values['VOLTAGE_API_URL'], 'https://process.example.test/api')
+
 
 class RequestTests(unittest.TestCase):
+    def test_base_url_defaults_and_shortcuts(self):
+        spec = request.load()
+        for environment, expected in [
+            (None, 'https://voltageapi.com/v1'),
+            ('production', 'https://voltageapi.com/v1'),
+            ('staging', 'https://staging.voltageapi.com/v1'),
+            ('local', 'https://localhost:3210'),
+        ]:
+            config = dict(CONFIG)
+            if environment:
+                config['VOLTAGE_API_ENV'] = environment
+            _, url, _ = request.prepare(spec, 'get_payments', config)
+            self.assertTrue(url.startswith(expected + '/organizations/'))
+
+    def test_custom_base_url_wins_and_is_validated(self):
+        custom = {**CONFIG, 'VOLTAGE_API_ENV': 'invalid-but-ignored', 'VOLTAGE_API_URL': 'https://api.example.test/custom/'}
+        _, url, _ = request.prepare(request.load(), 'get_payments', custom)
+        self.assertTrue(url.startswith('https://api.example.test/custom/organizations/'))
+        for value in ['', 'http://api.example.test/v1', 'https://user:pass@api.example.test/v1',
+                      'https://api.example.test/v1?key=value', 'https://api.example.test:bad/v1']:
+            with self.subTest(value=value):
+                with self.assertRaises(ValueError):
+                    request.prepare(request.load(), 'get_payments', {**CONFIG, 'VOLTAGE_API_URL': value})
+        with self.assertRaisesRegex(ValueError, 'VOLTAGE_API_ENV'):
+            request.prepare(request.load(), 'get_payments', {**CONFIG, 'VOLTAGE_API_ENV': 'preview'})
+
     def test_explicit_overrides_encoding_and_original_configuration(self):
         config = dict(CONFIG)
         method, url, key = request.prepare(request.load(), 'get_payments', config, [('environment_id', ORG)], [('statuses[]', 'completed'), ('metadata[external_id]', 'a&b?c')])
