@@ -39,8 +39,8 @@
   ],
   "contract": {
     "url": "https://voltageapi.com/v1/openapi/docs.json",
-    "retrieved_at": "2026-09-08T18:41:44.319160+00:00",
-    "sha256": "39999767c6c207db9358938cce8ab508d77f3dd43796664bb0c30c74ecd6ef87",
+    "retrieved_at": "2026-09-11T13:56:38.560267+00:00",
+    "sha256": "eef198d0072b57f5c38d93b5c5e5f25e38d81c0e9d3fb9f7041c68819babf9ac",
     "reference_page": "https://voltageapi.com/v1/docs",
     "file": "openapi.json",
     "openapi": "3.1.0",

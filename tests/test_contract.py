@@ -92,6 +92,13 @@ class ContractTests(unittest.TestCase):
         self.validator('Amount').validate({'currency': 'asset:' + 'a' * 66, 'amount': 25})
         self.assertFalse(self.validator('PaymentRequest').is_valid({'id': 'not-a-uuid', 'wallet_id': 'not-a-uuid', 'payment_kind': 'bolt11', 'amount': {'currency': 'btc', 'amount': 1000}}))
 
+    def test_webhook_test_examples_match_request_contract(self):
+        operation = inspector.inspect(self.spec, 'test_webhook', 'request')['operation']
+        examples = operation['requestBody']['content']['application/json']['examples']
+        for name, example in examples.items():
+            with self.subTest(example=name):
+                self.validator('TestWebhookRequest').validate(example['value'])
+
     def test_all_local_markdown_links_exist(self):
         for path in [ROOT / 'README.md', ROOT / 'CONTRIBUTING.md', *SKILL.rglob('*.md')]:
             for target in re.findall(r'\]\(([^)]+)\)', path.read_text()):

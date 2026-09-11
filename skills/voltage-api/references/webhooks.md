@@ -69,7 +69,11 @@ size limit. Do not put signing secrets in frontend code.
 
 Send/receive callbacks contain `{type, detail: {event, data}}`, with the payment in
 `detail.data`. Branch on verified `type`, then `detail.event`, and inspect payment
-status. For Bolt11, receive `completed` with payment `status: completed` is the
+status. `detail.event` is a string (`completed` for receive, `succeeded` for send,
+or `created` for test), unlike the tagged objects used in registration `events`.
+Payment currency wire values are lowercase, such as `btc`. Use the current
+`test_webhook` operation examples when constructing test payloads.
+For Bolt11, receive `completed` with payment `status: completed` is the
 success signal. `generated` / `receiving` only means the invoice is ready. Send
 event `succeeded` is different from receive event `succeeded`, which can indicate
 partial on-chain receipt. Do not invent a receive status `succeeded`; it is absent
