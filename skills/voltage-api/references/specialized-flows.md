@@ -74,6 +74,15 @@ terms if the settled principal changes. Use server-calculated fees and the actua
 breakdown, not local floating-point approximations. `data.fees` can include both
 network and processing fees. Fee-free and historical responses can omit fields.
 
+For bill reconciliation, inspect `BillRead` and `Invoice` separately from payment
+fees. Optional `scheduled_sections` capture fixed-contract and processing-fee
+components, and `settlement_fee_percentage` snapshots the bill's settlement rate.
+Optional/nullable `invoice.settlement_fee` is calculated from the gross ordinary
+USD ACH payout after holdback, excluding outer-billing credits. Use the bill's
+`amt_due` and `settlement_type` for the settlement magnitude and direction; do not
+add processing fees a second time. These response fields do not establish a public
+endpoint for configuring outer billing terms.
+
 ## Treasury movements: explicitly enabled, own funds only
 
 `create_treasury_movement` accepts the same send/receive shapes but requires
