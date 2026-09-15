@@ -72,6 +72,13 @@ An environment-scoped key cannot be made organization-wide just by changing a
 path. Organization-level routes still enforce the authenticated key's scope and
 permissions. API keys, user JWTs, checkout tokens, and webhook secrets are not interchangeable.
 
+For ordinary `create_payment` requests, sends require organization `WRITE`;
+receives accept `RECEIVE` or `WRITE`. Quote creation (`request_a_quote`) and
+checkout session creation (`create_session`) also accept `RECEIVE` or `WRITE`.
+Polling quotes and payments requires `READ`, so receive-only creation permission
+alone is insufficient for an integration that polls for completion. Inspect each
+operation before applying these permissions to other management or treasury calls.
+
 ## Discover and issue a request
 
 Find the operation in [api-index.md](api-index.md), then inspect it:

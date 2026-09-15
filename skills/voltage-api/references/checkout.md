@@ -72,7 +72,8 @@ Do not treat a normal `x-api-key` header as checkout browser authentication.
 
 | Operation | Authentication/behavior |
 |---|---|
-| `create_session`, settings read/write | Environment API key or user JWT as declared |
+| `create_session` | Environment API key or user JWT as declared; organization `RECEIVE` or `WRITE` permission |
+| Settings read/write | Environment API key or user JWT as declared; inspect each operation's permissions |
 | `get_session` | Bearer checkout session token; may return `202` while payment projection is not ready; honor `x-retry-after-ms` or `Retry-After` within a deadline |
 | `get_session_allowed_origins` | No security scheme declared; returns browser origin policy for the session |
 | `create_event_stream_token` | No header security scheme declared; `CreateEventStreamRequest` carries checkout tokens in its body; not unrestricted anonymous access |

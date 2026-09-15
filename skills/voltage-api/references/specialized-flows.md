@@ -31,6 +31,10 @@ and `quote_id`. Quoted receive expiration is capped by the quote's remaining lif
 Poll for the generated request, then payment completion. Never invent an any-amount
 USD receive flow.
 
+Creating the quote and receive accepts organization `RECEIVE` or `WRITE`
+permission; polling either resource requires `READ`. A receive integration can
+use `READ` plus `RECEIVE` without granting the `WRITE` permission needed for sends.
+
 Read cross-currency results carefully: `data.market_quote` records the market
 rate, `exchanges` records actual exchanged amounts, and modern amount/fee fields
 can use the market-quote display currency. A quoted receive's `requested_amount`
