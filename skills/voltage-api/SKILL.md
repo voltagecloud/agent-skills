@@ -72,9 +72,9 @@ upstream relative links; those are not local skill files.
 - For direct API account access use an environment key in `x-api-key`; the CLI
   also supports browser login. Check each operation's security contract; checkout
   browser tokens are different credentials.
-- Generate and persist UUIDv4 IDs before submitting payments; the CLI can generate
-  and journal these for you. Empty `202` means
-  accepted, not paid. Use bounded reads to wait for the needed state; reconcile
+- Generate and persist UUIDv4 IDs before submitting payments; CLI friendly payment
+  commands can generate and journal these for you. Raw payment and treasury JSON
+  must include an explicit `id`. Empty `202` means accepted, not paid. Use bounded reads to wait for the needed state; reconcile
   ambiguous writes by the existing ID rather than blindly retrying or creating a new ID.
 - API payloads use integer base units: BTC millisatoshis, USD cents, assets their
   base units. CLI friendly amount flags accept explicit units and convert exactly.

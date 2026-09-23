@@ -152,9 +152,12 @@ This differs from the direct helper's `body` envelope. `accepted` and exit 0 do 
 mean paid. `--wait ready` waits for an invoice/address; `--wait completed` waits
 for settlement. Report the observed business state and retain the payment ID.
 
-The CLI generates payment/treasury IDs unless supplied with `--id` and journals
-ID, scope, operation, and request hash before submission. It rejects reuse with
-a different request. After a dropped submission connection it performs one short
+Friendly payment commands generate a UUIDv4 unless supplied with `--id`. Raw
+payment and treasury submissions through `--data` require an explicit `id` in
+the JSON: generate it once and retain it for reconciliation. Treasury creation
+has no `--id` flag in v0.1.0. For both friendly and raw submissions, the CLI
+journals the ID, scope, operation, and request hash before submission and rejects
+reuse with a different request. After a dropped submission connection it performs one short
 read, without resubmitting. Reconcile with `payments get PAYMENT_ID` in the original
 scope before considering another write; switching to the API helper is not a
 reason to create a replacement payment.
