@@ -2,7 +2,9 @@
 
 Skills for building with and operating the **Voltage API**. The first skill,
 `voltage-api`, covers the product model, the published API contract, payment
-lifecycles, webhooks, checkout, and authenticated curl requests.
+lifecycles, webhooks, checkout, the open-source Voltage CLI, and authenticated
+curl requests. Agents prefer an installed CLI for supported operational tasks;
+application integrations retain full API guidance.
 
 ## Install
 
@@ -28,11 +30,16 @@ npx skills add . --list
 npx skills add . --skill voltage-api
 ```
 
-No Voltage CLI, MCP server, or npm package is required. The optional helpers
+The [Voltage CLI](https://github.com/voltagecloud/voltage-cli) is optional and
+publicly installable. See the [CLI guide](skills/voltage-api/references/cli.md)
+for installation, login, profiles, and examples. No CLI or MCP server is required
+to use the API guidance. The optional helpers
 require Python 3.9+ and curl; the TypeScript examples target server-side Node.js.
 
 ## Try it
 
+- “Install the Voltage CLI and help me configure a profile.”
+- “Use the Voltage CLI to list completed payments in my configured environment.”
 - “Use Voltage to create a Lightning invoice and wait for payment.”
 - “Build a Voltage webhook receiver that verifies signatures and reconciles payments.”
 - “Check the available balance of my staging wallet.”
@@ -41,7 +48,10 @@ require Python 3.9+ and curl; the TypeScript examples target server-side Node.js
 
 ## Local credentials
 
-The skill uses `~/.voltage/.env` as a local configuration convention. Installing
+The direct-request helper uses `~/.voltage/.env` as a local configuration convention.
+The CLI keeps its profiles under `$XDG_CONFIG_HOME/voltage`
+or `~/.config/voltage`, with credentials normally in the OS credential store;
+it does not read this helper file. Installing
 the skill does not create this file or connect to your account. Create it locally
 and populate it using your environment's API credentials; do not paste secrets
 into agent conversations.
@@ -76,6 +86,9 @@ provide product and setup context. Conflicts resolve in favor of the contract;
 unsupported behavior is left explicit. Original source terminology is retained
 in the unmodified contract; authored guidance calls the product Voltage and its
 developer interface the Voltage API.
+
+For CLI installation and behavior, use the official CLI release documentation
+and installed command help. CLI guidance does not replace the API contract.
 
 See [maintenance and validation](CONTRIBUTING.md) before refreshing references.
 This skill does not claim that schema-valid requests bypass permissions,

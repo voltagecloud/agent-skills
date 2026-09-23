@@ -2,7 +2,9 @@
 
 ## Update the contract
 
-Only use the Voltage API contract and docs as product sources. Preserve source
+Use the Voltage API contract and docs as API/product sources. Use the official
+`voltagecloud/voltage-cli` release documentation, source, and installed `--help`
+for CLI behavior. Preserve source
 bytes in `references/openapi.json`; `sources.json` records its SHA-256 and retrieval
 time. Handwritten references cite operations, schema names, or guide sections.
 Source titles can retain older branding. Do not rename paths, operation IDs, or
@@ -54,3 +56,17 @@ Live integration testing is separate: obtain an explicitly authorized test
 wallet, confirm its network and environment, and agree on any payment amount and
 fee constraints. Record what actually ran. An offline pass does not establish
 live service acceptance, current provisioning, or compatibility with every agent.
+
+## Update CLI guidance
+
+Keep `references/cli.md` focused on interface selection, setup, and representative
+workflows; use command-specific help instead of copying the command catalog.
+Record the checked release and source links. Verify release assets and examples
+against that version, distinguishing unreleased master features. Check auth/scope
+precedence, units, JSON envelopes, exit codes, and unknown-submission handling.
+Preserve the direct API helper and its separate configuration convention.
+
+Validate examples with release-binary help and synthetic credentials against a
+local mock server; do not authenticate or submit live payments for documentation
+checks. Extend `tests/scenarios.md` for observable agent decisions, including
+continued API integration support and copied-install reference discovery.
