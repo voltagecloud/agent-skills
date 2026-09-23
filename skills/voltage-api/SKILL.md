@@ -1,6 +1,6 @@
 ---
 name: voltage-api
-description: Build integrations and operate the Voltage API, including wallets, Lightning and on-chain payments, USD quotes, webhooks, balances, and hosted checkout. Use for Voltage product questions, API code, curl requests, and payment debugging. Does not cover the separate Infrastructure API or direct LND administration.
+description: Build integrations and operate the Voltage API, including wallets, Lightning and on-chain payments, USD quotes, webhooks, balances, and hosted checkout. Use for Voltage product questions, CLI installation and usage, API code, curl requests, and payment debugging. Does not cover the separate Infrastructure API or direct LND administration.
 ---
 
 # Voltage API
@@ -8,6 +8,18 @@ description: Build integrations and operate the Voltage API, including wallets, 
 Use **Voltage API** in developer contexts and **Voltage** for the product. Older
 sources and dashboard labels may say “Payments”; keep exact API identifiers and
 UI labels when needed to locate something.
+
+## Choose the interface
+
+- For supported account operations, prefer the installed `voltage` CLI. Read the
+  [CLI guide](references/cli.md) for installation, authentication, commands, and
+  output handling. If absent, offer installation when useful; direct API requests
+  remain supported. Honor an explicit interface choice.
+- For application integrations, use the API contract and server-side examples;
+  do not replace API integration code with CLI subprocess calls.
+- CLI questions use the official release documentation and installed command help.
+  API payloads and business rules use the contract below. Load only the references
+  needed for the chosen path.
 
 ## Establish the contract
 
@@ -28,6 +40,7 @@ UI labels when needed to locate something.
 
 | Task | Reference |
 |---|---|
+| Install, configure, operate, or troubleshoot the Voltage CLI | [CLI guide](references/cli.md) |
 | Understand terminology, funding models, setup, or applicability | [Product model](references/product-model.md) |
 | Obtain IDs, configure credentials, execute curl, or switch environment | [Configuration and execution](references/configuration.md) |
 | Find any endpoint, auth requirement, payload, filter, or response | [API index](references/api-index.md), then inspect the exact operation |
@@ -56,12 +69,15 @@ upstream relative links; those are not local skill files.
 - Establish organization, environment, wallet, network, currency, and the intended
   action. Reuse configured values and prior user authorization. Ask only for missing
   details that affect correctness or authorization. Do not pick a wallet arbitrarily.
-- For ordinary account access use an environment key in `x-api-key`. Check each
-  operation's security contract; checkout browser tokens are different credentials.
-- Generate and persist UUIDv4 IDs before submitting payments. Empty `202` means
-  accepted, not paid. Use bounded reads to wait for the needed state; reconcile
+- For direct API account access use an environment key in `x-api-key`; the CLI
+  also supports browser login. Check each operation's security contract; checkout
+  browser tokens are different credentials.
+- Generate and persist UUIDv4 IDs before submitting payments; CLI friendly payment
+  commands can generate and journal these for you. Raw payment and treasury JSON
+  must include an explicit `id`. Empty `202` means accepted, not paid. Use bounded reads to wait for the needed state; reconcile
   ambiguous writes by the existing ID rather than blindly retrying or creating a new ID.
-- Use integer base units: BTC millisatoshis, USD cents, assets their base units.
+- API payloads use integer base units: BTC millisatoshis, USD cents, assets their
+  base units. CLI friendly amount flags accept explicit units and convert exactly.
   For generated JavaScript, reject values outside the safe-integer range or use a
   lossless JSON strategy; the API's int64 range exceeds JavaScript's safe integers.
 - Direct requests are supported through the [curl helper](scripts/request.py).

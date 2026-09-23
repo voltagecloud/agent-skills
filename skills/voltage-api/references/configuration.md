@@ -5,10 +5,16 @@ parameters, `NewWalletRequest`, `NewWebhookRequest`. Setup context:
 [wallet setup](https://docs.voltageapi.com/wallet-setup-guide) and
 [access model](https://docs.voltageapi.com/access-model).
 
-## Local convention
+## Direct-request helper configuration
 
-`~/.voltage/` is reserved here for local Voltage configuration. This is a skill-pack
-convention, not an API requirement or a claim about a future CLI/MCP format.
+This guide configures `scripts/request.py`. For the official `voltage` CLI, use
+[the CLI guide](cli.md): its profiles live separately under
+`$XDG_CONFIG_HOME/voltage` or `~/.config/voltage` by default, with credentials
+normally in the OS credential store. The CLI does not load
+this helper's `~/.voltage/.env`, and the helper does not read CLI credentials.
+
+`~/.voltage/` is a skill-pack convention, not an API requirement. Do not migrate or
+overwrite existing configuration merely to switch interfaces.
 
 Use a regular file `~/.voltage/.env`, owned by the current user, mode `600` (or
 `400` if read-only), with a directory mode of `700`. Create it only when the user
