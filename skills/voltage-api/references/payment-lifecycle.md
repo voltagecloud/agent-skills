@@ -143,3 +143,8 @@ every list has the same encoding or envelope.
 For complete reconciliation, follow the unfiltered, repeated cursor sweeps in
 [webhooks.md](webhooks.md). `start_date` and `end_date` filter creation time;
 sorting by `updated_at` does not create an “updated since” query.
+
+For dashboard Payment History CSV imports, schema version 3 adds
+`processing_fee` and `payment_breakdown` columns; either value can be blank.
+Update fixed-column parsers and handle blanks when consuming that export. This
+CSV change does not add an API endpoint or replace payment and ledger reads.

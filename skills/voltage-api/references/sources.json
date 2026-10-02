@@ -35,12 +35,24 @@
       "retrieved_at": "2026-09-08T18:42:41.585652+00:00",
       "retrieved_html_sha256": "7597a26241dd0c1b6518321fea192b598223dc4db2db555d499deccc7a5d0747",
       "role": "Secondary product/setup context; OpenAPI takes precedence. HTML is not bundled."
+    },
+    {
+      "url": "https://docs.voltageapi.com/v6120-2026-09-21",
+      "retrieved_at": "2026-10-02T16:35:48+00:00",
+      "retrieved_html_sha256": "92f59d83115424cf72ad2570feb1cf6ac83f893d88d4cfa4d8fc89767c448756",
+      "role": "Release notes for v6.12.0; HTML is not bundled."
+    },
+    {
+      "url": "https://docs.voltageapi.com/v6130-2026-10-01",
+      "retrieved_at": "2026-10-02T16:35:48+00:00",
+      "retrieved_html_sha256": "abaa0ac46acd7b4b55d1dd7f957900357dec397efc31afb47a028fc995ae341e",
+      "role": "Release notes for v6.13.0; HTML is not bundled."
     }
   ],
   "contract": {
     "url": "https://voltageapi.com/v1/openapi/docs.json",
-    "retrieved_at": "2026-09-15T19:56:36.874286+00:00",
-    "sha256": "61dadfc5fe927d354657078ad6f8c6a3cc0419e2f9f6318afdcbae9a16429274",
+    "retrieved_at": "2026-10-02T16:35:48+00:00",
+    "sha256": "47801fa91fab322aa7e0c6aeccd450cd2f353d7a93104d2bfc46f72ceceba1ea",
     "reference_page": "https://voltageapi.com/v1/docs",
     "file": "openapi.json",
     "openapi": "3.1.0",

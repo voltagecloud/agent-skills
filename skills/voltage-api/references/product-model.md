@@ -71,6 +71,12 @@ network, and inspect its available balance/credit as relevant. Verify the intend
 test configuration rather than trusting a name such as “Staging”. A mainnet wallet
 can involve real funds even when a developer is merely testing application code.
 
+For wallet cleanup, inspect `delete_wallet` before requesting deletion. Managed
+MutinyNet wallets can be deleted with a positive test balance; other wallets
+must have no positive total balance. Deletion retains wallet history. Verify the
+wallet's actual network and backing rather than inferring eligibility from its
+environment name.
+
 ## Credential boundaries
 
 Use environment API keys for this API. A user JWT is an alternative only where

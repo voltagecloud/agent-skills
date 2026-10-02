@@ -86,6 +86,9 @@ USD ACH payout after holdback, excluding outer-billing credits. Use the bill's
 `amt_due` and `settlement_type` for the settlement magnitude and direction; do not
 add processing fees a second time. These response fields do not establish a public
 endpoint for configuring outer billing terms.
+Configured settlement fees may also appear in customer line-of-credit details in
+the product UI. The current `SummaryLineOfCredit` API schema does not expose a
+settlement-fee field; inspect the actual response rather than inventing one.
 
 ## Treasury movements: explicitly enabled, own funds only
 

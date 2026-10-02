@@ -77,6 +77,11 @@ env -u VOLTAGE_API_KEY -u VOLTAGE_ORGANIZATION_ID \
 An environment-scoped key cannot be made organization-wide just by changing a
 path. Organization-level routes still enforce the authenticated key's scope and
 permissions. API keys, user JWTs, checkout tokens, and webhook secrets are not interchangeable.
+User access can also be limited to particular environments. A successful
+organization-level list therefore does not prove that it contains resources from
+every environment. Use the intended user's or key's permitted environment when
+interpreting empty results or diagnosing a 403; do not switch credentials to
+bypass that boundary.
 
 For ordinary `create_payment` requests, sends require organization `WRITE`;
 receives accept `RECEIVE` or `WRITE`. Quote creation (`request_a_quote`) and
@@ -120,6 +125,16 @@ credential handling. It is **not** a full schema/runtime validator. Inspect the
 request schema and workflow constraints before executing.
 
 ## Responses and secrets
+
+For authentication failures, inspect `error.type` and the request actually sent.
+`400 missing_credentials` can mean a missing **or unrecognized** API key;
+`401 invalid_token` can mean a recognized key rejected by its IP allowlist;
+`403 access_rights` normally means a recognized credential lacks the required
+organization/environment access or permission. An `x-api-key` header takes
+precedence over bearer authentication, with no fallback. Check the selected
+environment, key status, outbound IP, and header substitution before changing a
+credential; new keys can take roughly a minute to propagate. Do not print keys
+while troubleshooting.
 
 Normal output is a JSON envelope with `http_status`, parsed `body` (null for an
 empty response), and `non_json_body`. Non-JSON server text is suppressed. Inspect
