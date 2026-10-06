@@ -140,6 +140,59 @@ and rejects IDs conflicting with selected scope. Use command-specific help for
 quotes, credit lines, bills, webhooks, treasury, and checkout rather than guessing
 command names or assuming all API features are provisioned.
 
+## Backend v6.14.0 payment checks
+
+Release v0.1.0 predates these additions. Filter/promotion support is proposed in
+[CLI PR #13](https://github.com/voltagecloud/voltage-cli/pull/13), verified locally
+at `95bbac89aed3352214764f9ef249d13fe4b4d4b2`; it is unreleased. Check `voltage --version` and
+`voltage payments list --help`; do not assume installed releases support
+`--check-only`. A supporting CLI build accepts:
+
+```sh
+voltage payments list --profile work --check-only true --all --json
+voltage payments list --profile work --check-only false --limit 10 --json
+```
+
+`--all` preserves the filter on every cursor page. For manual pagination,
+repeat `--check-only` with the same value. Read the [classification limits](payment-lifecycle.md#payment-checks-in-backend-v6140)
+before treating the result as a history or settlement report.
+
+If installed help lacks this filter, use an authenticated request against a
+backend supporting v6.14.0 rather than passing an undocumented `--query`:
+
+```sh
+curl --get --fail-with-body \
+  -H "x-api-key: $VOLTAGE_API_KEY" \
+  "$VOLTAGE_API_URL/organizations/$VOLTAGE_ORGANIZATION_ID/environments/$VOLTAGE_ENVIRONMENT_ID/payments" \
+  --data-urlencode "check_only=true" \
+  --data-urlencode "pagination=cursor" \
+  --data-urlencode "limit=100"
+```
+
+Use securely supplied credentials and the resolved, intended environment.
+Repeat the filter when adding `cursor` for the next page. The pinned
+schema-driven helper currently rejects this new parameter.
+
+For an approved check, newer CLI support must explicitly permit the checked
+ID's promotion while retaining its recovery protections. Existing v0.1.0
+journaling rejects `payments check` followed by `payments create` using the same
+ID because the operation changes. Do not delete the journal or switch transport
+to bypass that rejection. Reconcile the original ID and use a reviewed CLI
+build supporting promotion. Retain the identical request JSON and scope:
+
+```sh
+voltage payments check --profile work --data @send.json --json
+voltage payments get PAYMENT_ID --profile work --json
+# Only after approved check status and explicit authorization to spend:
+voltage payments create --profile work --data @send.json --yes --json
+voltage payments get PAYMENT_ID --profile work --wait completed --timeout 120 --json
+```
+
+The promotion-aware CLI verifies an approved send with `check_only=true`
+before submission; missing fields or a stale check after a dropped connection
+must not be treated as proof of an accepted send. Approval and `check_only=false`
+are not settlement. Keep the original ID for reconciliation.
+
 ## Outcomes, retries, and secrets
 
 JSON uses `http_status`, `data`, and optional `resource_id`/`outcome`, for example:

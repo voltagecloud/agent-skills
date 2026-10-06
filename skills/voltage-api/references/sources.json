@@ -66,5 +66,18 @@
       "Credit-backed is the easiest and recommended starting point for most customers; agents explain applicability and do not decide for the customer.",
       "Use ~/.voltage/ as a local configuration convention; this is not an API contract requirement."
     ]
-  }
+  },
+  "tagged_release_sources": [
+    {
+      "release": "v6.14.0",
+      "commit": "42cd0c1ff4a282dc4a47421eb26818e515e7dcaa",
+      "reviewed_at": "2026-10-06",
+      "urls": [
+        "https://github.com/voltagecloud/backend/blob/42cd0c1ff4a282dc4a47421eb26818e515e7dcaa/docs/api/payments.md",
+        "https://github.com/voltagecloud/backend/blob/42cd0c1ff4a282dc4a47421eb26818e515e7dcaa/crates/voltage_eventing/src/payment/db.rs",
+        "https://github.com/voltagecloud/backend/blob/42cd0c1ff4a282dc4a47421eb26818e515e7dcaa/crates/database/migrations/20261002200100_backfill_sends_check_only.up.sql"
+      ],
+      "role": "Explicit payment-check supplement while public OpenAPI omits v6.14.0 field/filter; snapshot bytes unchanged. Source verification does not establish deployment."
+    }
+  ]
 }

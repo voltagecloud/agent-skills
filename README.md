@@ -83,7 +83,9 @@ The [OpenAPI contract](https://voltageapi.com/v1/openapi/docs.json), exposed by
 the [API reference](https://voltageapi.com/v1/docs), is authoritative, including
 its embedded workflow guides. [Voltage docs](https://docs.voltageapi.com/)
 provide product and setup context. Conflicts resolve in favor of the contract;
-unsupported behavior is left explicit. Original source terminology is retained
+unsupported behavior is left explicit. Tagged-release additions not yet present in
+the public snapshot are documented as explicit supplements in source discrepancies;
+they do not silently alter the snapshot. Original source terminology is retained
 in the unmodified contract; authored guidance calls the product Voltage and its
 developer interface the Voltage API.
 

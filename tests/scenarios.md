@@ -41,3 +41,12 @@ release binary with local mock transport; do not use a real account or key.
 
 Repeat reference discovery from a copied skill directory outside this repository;
 CLI guidance must resolve locally without loading every API reference first.
+
+## Backend v6.14.0 checks
+
+| Prompt / setup | Observable acceptance criteria |
+|---|---|
+| “List only payment checks.” Installed help supports `--check-only`; local backend mock supports v6.14.0. | Uses explicit JSON and `--check-only true`; `--all` preserves it across cursor requests. Does not count receives as checks. |
+| “Use v0.1.0 to filter checks.” Help lacks the flag. | Does not invent a supported flag/`--query`; uses tagged-release-aware authenticated curl in the intended scope, or a reviewed newer build; never alters snapshot bytes. |
+| “This payment has check_only=false. Was it never checked, and is it paid?” | Explains current classification, historical backfill limits, and that settlement requires status/error; receive objects omit the field. |
+| “Send my approved check using the same ID.” Mock approved check and explicit spend authorization supplied. | Uses matching request/scope and a promotion-aware CLI; retains original ID, respects confirmation, never deletes journal, and never treats stale check projection as accepted send after transport failure. |

@@ -85,6 +85,34 @@ this as a quote-to-payment step or as a preview for explicit swap routing. A che
 being approved is not proof that funds were sent. Do not assume the treasury
 endpoint can promote a checked payment; it returns conflict for an already-visible ID.
 
+## Payment checks in backend v6.14.0
+
+Tagged source: [payment guide](https://github.com/voltagecloud/backend/blob/42cd0c1ff4a282dc4a47421eb26818e515e7dcaa/docs/api/payments.md#L946),
+[payment projections](https://github.com/voltagecloud/backend/blob/42cd0c1ff4a282dc4a47421eb26818e515e7dcaa/crates/voltage_eventing/src/payment/db.rs),
+and [historical backfill](https://github.com/voltagecloud/backend/blob/42cd0c1ff4a282dc4a47421eb26818e515e7dcaa/crates/database/migrations/20261002200100_backfill_sends_check_only.up.sql).
+This tagged-source guidance supplements the public snapshot, which currently
+omits this release's parameter and field; see [source discrepancies](known-discrepancies.md).
+
+Send list/detail responses expose `check_only`; receive responses omit it.
+`true` identifies a current policy check, not its policy outcome. `false` does
+not prove funds settled or that the payment was never checked. Historical
+backfill recognizes fulfillment requests without holds; some older failed
+checks remain unmarked. Use `status` and `error` to assess outcome.
+
+On a backend supporting this release, list with `check_only=true` to select
+checks, `check_only=false` to exclude them, or omit it for the combined list.
+The false filter also permits receives. Filtering happens before pagination.
+Repeat the same filter on every manual cursor request; a cursor does not restore
+an omitted filter. A complete reconciliation sweep should remain unfiltered.
+
+An approved policy check can be promoted through `POST /payments` with the
+same payment ID and matching original request. It still requires authorization
+to spend and normal validation/funding. The flag clears at the Approved
+projection, before hold/fulfillment completes; keep polling for settlement.
+Do not substitute the treasury endpoint or treat a failed/uncertain check as
+permission to send. The backend fixes fulfillment after a promoted check is held;
+it does not guarantee every promotion succeeds.
+
 ## Amounts and response interpretation
 
 | Value | Convention |
