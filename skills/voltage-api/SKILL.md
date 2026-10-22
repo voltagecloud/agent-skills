@@ -44,7 +44,7 @@ UI labels when needed to locate something.
 | Understand terminology, funding models, setup, or applicability | [Product model](references/product-model.md) |
 | Obtain IDs, configure credentials, execute curl, or switch environment | [Configuration and execution](references/configuration.md) |
 | Find any endpoint, auth requirement, payload, filter, or response | [API index](references/api-index.md), then inspect the exact operation |
-| Send, receive, poll, handle errors, inspect balances | [Payment lifecycle](references/payment-lifecycle.md) |
+| Send, receive, policy checks, adjustment ledgers, balances | [Payment lifecycle](references/payment-lifecycle.md) |
 | USD conversion, processing fees, treasury, swaps | [Specialized flows](references/specialized-flows.md) |
 | Verify callbacks, manage deliveries, reconcile payments | [Webhooks](references/webhooks.md) |
 | Integrate hosted checkout or browser session/stream APIs | [Checkout](references/checkout.md) |
@@ -76,6 +76,9 @@ upstream relative links; those are not local skill files.
   commands can generate and journal these for you. Raw payment and treasury JSON
   must include an explicit `id`. Empty `202` means accepted, not paid. Use bounded reads to wait for the needed state; reconcile
   ambiguous writes by the existing ID rather than blindly retrying or creating a new ID.
+- CLI v0.2.0 API writes require `--execute` or `VOLTAGE_EXECUTE=1`. An exit 6
+  with `outcome: dry_run` describes an unsubmitted change, not HTTP acceptance.
+  Use explicit scope, currency, `--json`, and `--no-input` for agent execution.
 - API payloads use integer base units: BTC millisatoshis, USD cents, assets their
   base units. CLI friendly amount flags accept explicit units and convert exactly.
   For generated JavaScript, reject values outside the safe-integer range or use a

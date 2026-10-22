@@ -32,7 +32,9 @@ npx skills add . --skill voltage-api
 
 The [Voltage CLI](https://github.com/voltagecloud/voltage-cli) is optional and
 publicly installable. See the [CLI guide](skills/voltage-api/references/cli.md)
-for installation, login, profiles, and examples. No CLI or MCP server is required
+for released v0.2.0 installation, execution, login, profiles, and examples.
+The API snapshot includes backend v6.14/v6.15 checks, adjustment ledgers, and
+checkout return URLs. Missing CLI filters use direct API fallbacks. No CLI or MCP server is required
 to use the API guidance. The optional helpers
 require Python 3.9+ and curl; the TypeScript examples target server-side Node.js.
 

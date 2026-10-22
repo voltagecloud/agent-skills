@@ -1,9 +1,9 @@
 # Voltage CLI
 
-Verified against release **v0.1.0** on 2026-09-22:
-[release and assets](https://github.com/voltagecloud/voltage-cli/releases/tag/v0.1.0),
-[release README](https://github.com/voltagecloud/voltage-cli/blob/v0.1.0/README.md),
-[command reference](https://github.com/voltagecloud/voltage-cli/blob/v0.1.0/docs/commands.md).
+Verified against release **v0.2.0** on 2026-10-22:
+[release and assets](https://github.com/voltagecloud/voltage-cli/releases/tag/v0.2.0),
+[release README](https://github.com/voltagecloud/voltage-cli/blob/v0.2.0/README.md),
+[command reference](https://github.com/voltagecloud/voltage-cli/blob/v0.2.0/docs/commands.md).
 The CLI is open source and publicly installable. Use it for supported operations
 when available; retain the API contract for application code and exact payloads.
 
@@ -35,13 +35,15 @@ Extract the `.tar.gz` (Windows: `.zip`) and put the contained `voltage` executab
 example, copy the extracted binary into `~/.local/bin`, ensure it is executable,
 and add that directory to the current shell's `PATH` if absent. Verify with
 `voltage --version`. Avoid overwriting an existing installation without checking
-how it is managed. Release v0.1.0 includes `voltage.rb`, but does not publish a
-Sigstore bundle; do not assume newer master verification instructions apply to it.
+how it is managed. Release v0.2.0 includes `voltage.rb`, archive provenance attestations, and
+`SHA256SUMS.sigstore.json`. Before installing, follow the release’s
+[signature and provenance verification](https://github.com/voltagecloud/voltage-cli/blob/v0.2.0/docs/guides/install.md#verify-a-download)
+with `gh attestation verify` and `cosign verify-blob`, then compare the archive checksum.
 
 For a source build with Rust installed, use the selected release tag:
 
 ```sh
-git clone --branch v0.1.0 --depth 1 https://github.com/voltagecloud/voltage-cli.git
+git clone --branch v0.2.0 --depth 1 https://github.com/voltagecloud/voltage-cli.git
 cd voltage-cli
 cargo install --path . --locked
 # Ensure Cargo's bin directory (normally ~/.cargo/bin) is on PATH.
@@ -96,6 +98,29 @@ assume credentials are shared.
 - Pass `--env` only where the command supports it. Organization-wide commands
   describe that scope in help. Do not change saved defaults for a one-off request.
 
+## Execution and local context
+
+API writes require `--execute` or `VOLTAGE_EXECUTE=1`. Without execution enabled,
+the CLI describes the request and exits 6 with `outcome: dry_run` and
+`http_status: null`. It submits no change, writes no recovery journal, and creates no
+output file. Local validation does not establish API acceptance. Use
+`VOLTAGE_EXECUTE=0` to describe a command when the environment enables execution.
+
+For agent execution, pass explicit scope, wallet, currency, `--json`, and
+`--no-input`. JSON or no-input suppresses scope pickers; no-input does not approve
+writes. Missing currency can cause a wallet read even during a preview. A missing
+wallet on a BOLT11 send can also cause discovery reads. Keep explicit values to
+avoid these reads. Friendly previews generate a fresh ID unless given `--id`;
+retain the same ID for the eventual authorized submission.
+
+`voltage context --profile work --json` reports effective local scope and its
+sources without reading secrets or making network requests. It cannot prove that
+a saved login is still accepted. For `login_expired`, follow the error hint and
+run `voltage login --account NAME`; the user completes browser approval. A repeat
+login replaces the same user's saved session. An auth-URL mismatch requires
+logout at the original auth URL before login at the intended URL. Do not switch
+production scope or delete credentials to bypass a permissions error.
+
 ## Operate with compact, structured output
 
 Use explicit `--json` for agent execution. Resolve placeholders from the user's
@@ -107,7 +132,7 @@ voltage wallets list --profile work --json
 voltage wallets get WALLET_ID --profile work --json
 voltage payments list --profile work --statuses completed --limit 10 --json
 voltage payments receive --profile work --wallet WALLET_ID \
-  --currency btc --kind bolt11 --amount 150 --unit sats --wait ready --json
+  --currency btc --kind bolt11 --amount 150 --unit sats --wait ready --execute --no-input --json
 voltage payments get PAYMENT_ID --profile work --wait completed --timeout 120 --json
 ```
 
@@ -121,12 +146,12 @@ For an already authorized BTC invoice payment with understood fees:
 
 ```sh
 voltage payments send --profile work --wallet WALLET_ID --currency btc \
-  --invoice BOLT11_INVOICE --max-fee 10 --fee-unit sats --yes --json
+  --invoice BOLT11_INVOICE --max-fee 10 --fee-unit sats --execute --no-input --json
 ```
 
 The example fee ceiling is illustrative: use the user's agreed limit. It covers
-network/provider fees; processing fees are additional. `--yes` suppresses the CLI
-prompt for an action already authorized by the user, not authorization to spend.
+network/provider fees; processing fees are additional. Add `--execute` only for
+an action already authorized by the user. It sends without another approval prompt.
 Friendly amounts use explicit units (`msats`, `sats`, `btc`, `cents`, `usd`) and
 exact conversion. USD payment flows require an appropriate `--quote`; follow
 [specialized flows](specialized-flows.md). Public `voltage price` and
@@ -155,7 +180,7 @@ for settlement. Report the observed business state and retain the payment ID.
 Friendly payment commands generate a UUIDv4 unless supplied with `--id`. Raw
 payment and treasury submissions through `--data` require an explicit `id` in
 the JSON: generate it once and retain it for reconciliation. Treasury creation
-has no `--id` flag in v0.1.0. For both friendly and raw submissions, the CLI
+has no `--id` flag in v0.2.0. For both friendly and raw submissions, the CLI
 journals the ID, scope, operation, and request hash before submission and rejects
 reuse with a different request. After a dropped submission connection it performs one short
 read, without resubmitting. Reconcile with `payments get PAYMENT_ID` in the original
@@ -170,6 +195,7 @@ reason to create a replacement payment.
 | 3 | Authentication/authorization failure; check selected credential and permissions |
 | 4 | Transport failure or unknown submission; reconcile writes by existing ID |
 | 5 | Wait/pagination deadline; retain ID or recognize incomplete results |
+| 6 | Described only; no write submitted; inspect `dry_run`, then execute only if authorized |
 | 130 | Interrupted; a submitted payment is not canceled |
 
 Diagnostics and prompts go to stderr. Normal output redacts known secrets, but
@@ -182,3 +208,17 @@ Checkout browser operations use separate session/stream tokens, never account
 credentials: `VOLTAGE_CHECKOUT_TOKEN`, `VOLTAGE_STREAM_TOKEN`, or private
 `--token-file PATH`/stdin. Supply `--origin` when required. See [checkout](checkout.md)
 for fulfillment rules; checkout events alone do not establish payment settlement.
+
+## Released command limitations
+
+Release v0.2.0 does not expose payment-list `check_only` or wallet-ledger
+`event_type=adjustment` flags. Use the contract-backed helper examples in
+[payment lifecycle](payment-lifecycle.md). Do not invent CLI flags or filter a
+single page locally as a substitute for a server filter.
+
+The released recovery journal rejects a check→send operation change for the same
+ID. Do not promise CLI promotion, bypass its journal, or generate a replacement
+payment ID. An authorized API integration can use the backend's same-ID promotion
+contract after reconciling the original check. If a CLI check already exists,
+report the CLI limitation and reconcile it before planning a direct API operation.
+A companion CLI PR, including a merged PR, does not establish released support.
