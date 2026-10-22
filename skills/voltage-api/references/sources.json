@@ -51,8 +51,8 @@
   ],
   "contract": {
     "url": "https://voltageapi.com/v1/openapi/docs.json",
-    "retrieved_at": "2026-10-02T16:35:48+00:00",
-    "sha256": "47801fa91fab322aa7e0c6aeccd450cd2f353d7a93104d2bfc46f72ceceba1ea",
+    "retrieved_at": "2026-10-22T21:45:53.664030+00:00",
+    "sha256": "782f57935dd9991a75991ad17e25ec34daf7ba85f2bcba677adda7781bd8f3c1",
     "reference_page": "https://voltageapi.com/v1/docs",
     "file": "openapi.json",
     "openapi": "3.1.0",
@@ -66,5 +66,24 @@
       "Credit-backed is the easiest and recommended starting point for most customers; agents explain applicability and do not decide for the customer.",
       "Use ~/.voltage/ as a local configuration convention; this is not an API contract requirement."
     ]
-  }
+  },
+  "cli_source": {
+    "version": "v0.2.0",
+    "reviewed_on": "2026-10-22",
+    "release": "https://github.com/voltagecloud/voltage-cli/releases/tag/v0.2.0",
+    "source_commit": "520c775",
+    "scope": "Release docs and actual release binary help; no live payment execution"
+  },
+  "backend_release_sources": [
+    {
+      "version": "v6.14.0",
+      "commit": "db3211d48db6cf05b4acf19d80d2083453e53f43",
+      "url": "https://github.com/voltagecloud/backend/releases/tag/v6.14.0"
+    },
+    {
+      "version": "v6.15.0",
+      "commit": "1630b77c9e1e90dfa8610d35571362e51744cb16",
+      "url": "https://github.com/voltagecloud/backend/releases/tag/v6.15.0"
+    }
+  ]
 }

@@ -41,3 +41,19 @@ release binary with local mock transport; do not use a real account or key.
 
 Repeat reference discovery from a copied skill directory outside this repository;
 CLI guidance must resolve locally without loading every API reference first.
+
+## Released v0.2.0 and refreshed API scenarios
+
+| Prompt or injected result | Required behavior |
+|---|---|
+| An invoice command exits 6 with `outcome: dry_run` | Say nothing was submitted; execute only within existing authorization. Do not report an invoice or acceptance. |
+| The environment sets `VOLTAGE_EXECUTE=1`; user asks for a preview | Set `VOLTAGE_EXECUTE=0`; provide explicit wallet, currency, scope, and JSON/no-input. |
+| A saved login fails with `login_expired`, but context looks valid | Explain context is local; follow the login hint and user browser approval. Do not change scope. |
+| List only policy checks using v0.2.0 | Use direct API `check_only=true`; preserve the filter on each page, without inventing CLI flags. |
+| An approved check was created through the CLI; send the same ID | Explain released journal limitation; reconcile first. Do not bypass the journal or substitute a new ID. |
+| Retrieve adjustments for a year plus a payment ID | Explain the empty-ledger combination; omit the payment filter and use explicit dates. Preserve filters between pages. |
+| A checkout success return is observed, but server payment remains pending | Do not fulfill; verify payment server-side. Handle null/missing redirect URLs. |
+| A webhook-test fixture includes `check_only: false` | Do not generalize this fixture into a guarantee for every webhook payload. |
+
+Run these scenarios from a copied skill directory too. Resolve every helper and
+reference from that directory; keep repository files and live credentials unavailable.

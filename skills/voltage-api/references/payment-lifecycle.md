@@ -85,6 +85,33 @@ this as a quote-to-payment step or as a preview for explicit swap routing. A che
 being approved is not proof that funds were sent. Do not assume the treasury
 endpoint can promote a checked payment; it returns conflict for an already-visible ID.
 
+## Payment checks in backend v6.14.0
+
+Tagged source: [payment guide](https://github.com/voltagecloud/backend/blob/db3211d48db6cf05b4acf19d80d2083453e53f43/docs/api/payments.md#L946),
+[payment projections](https://github.com/voltagecloud/backend/blob/db3211d48db6cf05b4acf19d80d2083453e53f43/crates/voltage_eventing/src/payment/db.rs),
+and [historical backfill](https://github.com/voltagecloud/backend/blob/db3211d48db6cf05b4acf19d80d2083453e53f43/crates/database/migrations/20261002200100_backfill_sends_check_only.up.sql).
+The public snapshot now includes `get_payments.check_only` and `SendPayment.check_only`.
+
+Send list/detail responses expose `check_only`; receive responses omit it.
+`true` identifies a current policy check, not its policy outcome. `false` does
+not prove funds settled or that the payment was never checked. Historical
+backfill recognizes fulfillment requests without holds; some older failed
+checks remain unmarked. Use `status` and `error` to assess outcome.
+
+On a backend supporting this release, list with `check_only=true` to select
+checks, `check_only=false` to exclude them, or omit it for the combined list.
+The false filter also permits receives. Filtering happens before pagination.
+Repeat the same filter on every manual cursor request; a cursor does not restore
+an omitted filter. A complete reconciliation sweep should remain unfiltered.
+
+An approved policy check can be promoted through `POST /payments` with the
+same payment ID and matching original request. It still requires authorization
+to spend and normal validation/funding. The flag clears at the Approved
+projection, before hold/fulfillment completes; keep polling for settlement.
+Do not substitute the treasury endpoint or treat a failed/uncertain check as
+permission to send. The backend fixes fulfillment after a promoted check is held;
+it does not guarantee every promotion succeeds.
+
 ## Amounts and response interpretation
 
 | Value | Convention |
@@ -148,3 +175,28 @@ For dashboard Payment History CSV imports, schema version 3 adds
 `processing_fee` and `payment_breakdown` columns; either value can be blank.
 Update fixed-column parsers and handle blanks when consuming that export. This
 CSV change does not add an API endpoint or replace payment and ledger reads.
+
+## Direct API filters and wallet adjustments
+
+Release CLI v0.2.0 lacks these filters. Resolve the helper configuration first,
+then use its operation names and query encoding:
+
+```sh
+python3 <skill-dir>/scripts/request.py get_payments --query check_only=true
+python3 <skill-dir>/scripts/request.py get_wallet_ledger_as_user \
+  --param "wallet_id=$WALLET_ID" --query event_type=adjustment \
+  --query start_date=2026-10-01T00:00:00Z --query end_date=2026-10-22T00:00:00Z
+```
+
+The dates are illustrative; choose the user's intended reporting window.
+Omitting `event_type` returns payment ledger entries. `adjustment` returns recorded
+deposits and withdrawals; these are accounting adjustments, not Bitcoin transfer
+proof. Missing `start_date` defaults to 30 days ago. All adjustment date/sort keys
+and response `effective_time` use message time. Combining adjustments with
+`payment_id` returns an empty ledger. Preserve date, event-type, and ordering
+filters across pages. Do not invent an adjustment reason or memo.
+
+ACH bill receipts can expose optional `UsdPayment` fields `fed_trace_number` and
+`batch_id`. They can be absent for unsent or historical transfers. The batch ID is
+Voltage's statement reference, not the bank provider's numeric batch ID. Do not
+assume one statement line per transfer or retroactive updates to old statements.

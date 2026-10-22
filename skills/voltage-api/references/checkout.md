@@ -83,3 +83,14 @@ The curl helper intentionally covers API-key operations only. Use exact inspecte
 browser schemas for session reads and SSE. Preserve the contract's Origin checks,
 token expiry, retry hints, and event names in a custom client. Browser tokens must
 never be used as environment API keys or vice versa.
+
+## Optional merchant return URLs
+
+`BrowserCheckoutSession.redirect_urls` is optional or null. When configured,
+authenticated `get_session` responses and SSE snapshots expose success/failure
+URLs using `CheckoutRedirectUrls`. Handle missing values without inventing a
+return destination. This API field does not establish an automatic redirect or
+a deployed hosted-page Continue button. A return URL, browser navigation, or
+success-looking browser state never authorizes fulfillment; verify the underlying
+payment on the server. Keep return destinations merchant-controlled and avoid
+logging session tokens alongside URLs.

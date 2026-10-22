@@ -1,6 +1,6 @@
 # Source discrepancies and contract limitations
 
-Reviewed 2026-09-08. This file records actionable differences, not a claim that
+Contract delta reviewed 2026-10-22; historical human-doc discrepancies below retain their original scope. This file records actionable differences, not a claim that
 every example on both sites has been audited. Recheck when updating the snapshot.
 
 | Topic | Conflicting or incomplete source | Follow this rule |
@@ -16,3 +16,10 @@ Schema-valid does not mean runtime-supported. Respect descriptions covering
 permissions, currency, feature gates, funding, fee policies, and provisioning.
 Where the contract has an internal limitation, avoid presenting a guess as working
 code. Never silently repair source bytes; fix derived guidance and record the issue.
+
+The October 22 snapshot publishes payment `check_only`, adjustment-ledger filtering,
+and browser checkout return URLs. Earlier draft guidance that described v6.14 as
+withdrawn or these fields as absent is superseded. Wallet deletion's summary was
+clarified without changing the balance restrictions. The webhook-test example
+now includes `check_only: false`; this does not promise that every webhook payload
+includes that field. Inspect each event schema independently.
