@@ -74,7 +74,8 @@ VOLTAGE_WALLET_ID=your-wallet-uuid
 ```
 
 Process environment values override the file. Explicit resource parameters
-override defaults for a single request. See the skill's
+override defaults for a single request. The CLI ignores these variables when
+`--profile` is selected, so use one interface per task. See the skill's
 [configuration guide](skills/voltage-api/references/configuration.md).
 
 ## Source policy and maintenance

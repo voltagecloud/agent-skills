@@ -15,6 +15,9 @@ UI labels when needed to locate something.
   [CLI guide](references/cli.md) for installation, authentication, commands, and
   output handling. If absent, offer installation when useful; direct API requests
   remain supported. Honor an explicit interface choice.
+- Use one interface for a task. The CLI and the direct-request helper apply
+  opposite precedence to the same `VOLTAGE_*` variables; before switching, follow
+  the [switching checklist](references/configuration.md#switch-interface-or-environment).
 - For application integrations, use the API contract and server-side examples;
   do not replace API integration code with CLI subprocess calls.
 - CLI questions use the official release documentation and installed command help.
