@@ -39,7 +39,8 @@ file. `--config` selects a different file for that invocation; process variables
 still win, including explicitly empty variables. An empty key fails rather than
 silently falling back to a saved key. Config file values are never rewritten by
 requests. Body fields are always explicit: the helper does not insert wallet IDs,
-amounts, or generated IDs into JSON.
+amounts, or generated IDs into JSON. The CLI applies the opposite order under
+`--profile`; see [switch interface or environment](#switch-interface-or-environment).
 
 To switch environments, use a matching set of key/environment/wallet values. For
 example, if a separate key is already securely supplied in the process environment:
@@ -60,6 +61,43 @@ env -u VOLTAGE_API_KEY -u VOLTAGE_ORGANIZATION_ID \
   python3 <skill-dir>/scripts/request.py get_payments \
   --config ~/.voltage/test.env --query pagination=cursor --query limit=10
 ```
+
+## Switch interface or environment
+
+The helper and the `voltage` CLI read the same `VOLTAGE_*` names with opposite
+precedence. Under `--profile`, the CLI ignores these variables. The helper lets
+them override its file:
+
+| Setting | `voltage` CLI (v0.2.0) | `scripts/request.py` helper |
+|---|---|---|
+| Saved configuration | Profiles in `config.toml` under the CLI configuration directory | `~/.voltage/.env`, or the file that `--config` names |
+| Selects saved configuration | `--profile NAME` only | Always reads the file when it exists |
+| `VOLTAGE_API_KEY` | Ignored with `--profile` or `--account` | Overrides the file |
+| `VOLTAGE_ORGANIZATION_ID`, `VOLTAGE_ENVIRONMENT_ID`, `VOLTAGE_WALLET_ID` | Ignored with `--profile`; otherwise used when no flag is given | Override the file; fill only path parameters of the same name |
+| Order, highest first | Flag, then profile; variables only without a profile | `--param`, then process variable, then file |
+| Show effective values | `voltage context --json` | No command; inspect variables and the file without printing the key |
+
+Use one interface for a task. Prefer `voltage` when it is installed and supports
+the operation. Use the helper for operations that the CLI does not support, or when
+the user chooses it. Do not alternate between the two in one shell.
+
+Before you change interface or environment, do these steps:
+
+1. Record the organization, environment, and wallet that the previous commands used.
+2. For the CLI, run `voltage context --profile NAME --json`. Read
+   `organization_id`, `environment_ids`, `wallet_id`, and `ignored_variables`.
+3. For the helper, list which of the four `VOLTAGE_*` names are set, without
+   printing values. Unset them, or set all four to one matching environment.
+4. Make sure the helper's API key belongs to the same environment as the IDs.
+5. Read the wallet with the new interface. Compare its ID, environment, and network
+   with step 1 before any write.
+6. Reconcile an uncertain write by its existing ID in the original scope. Do not
+   resubmit it through the other interface.
+
+voltagecloud/voltage-cli#122 proposes `voltage context --format env`, which prints a
+profile's scope as `VOLTAGE_*` lines. Release v0.2.0 does not include it. Once a
+release includes it, its output can supply the helper's organization, environment,
+and wallet. It omits the API key, so supply a key for the same environment separately.
 
 ## IDs and authentication
 
